@@ -13,7 +13,11 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,117 +41,120 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.zip.Inflater;
 
 public class fragment extends Fragment {
 
+
+    ArrayList <ModelItems> items = new ArrayList <>();
+    ItemAdapter adapter;
+
     Context context;
     int pos;
-    int val;
-    public fragment()
-    {
+    public fragment() {
 
     }
-    public fragment(int i)
-    {
+
+    public fragment(int i) {
+
         this.pos = i;
     }
 
-    public static void mymethod(int j)
-    {
 
-    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        //return ((MainActivity) getActivity()).my_method();
-
-        return inflater.inflate(R.layout.news,container,false);
+        return inflater.inflate(R.layout.xmlfragment, container, false);
 
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-          super.onViewCreated(view, savedInstanceState);
+        super.onViewCreated(view, savedInstanceState);
 
-          final TextView editTitle = getView().findViewById(R.id.tittle1);
-          final ImageView editUrlImage = getView().findViewById(R.id.image1);
-          final TextView editauthor = getView().findViewById(R.id.author);
-          final TextView editdate = getView().findViewById(R.id.date);
-          final TextView editdescription = getView().findViewById(R.id.description);
-          final TextView editcontent = getView().findViewById(R.id.content1);
-          final Button editDetails = getView().findViewById(R.id.details);
+        final RecyclerView recyclerView = getView().findViewById(R.id.recyclerView);
 
 
-        String url = "http://newsapi.org/v2/everything?q=bitcoin&from=2020-02-08&sortBy=publishedAt&apiKey=9e1ac8704e124f32ab6b70e9de3a56c8";
+        String urltemp="";
+        if (pos == 0) {
+            urltemp = "http://newsapi.org/v2/top-headlines?sources=vice-news&apiKey=9e1ac8704e124f32ab6b70e9de3a56c8";
+        }
+        else if(pos == 1)
+            urltemp = "http://newsapi.org/v2/top-headlines?sources=ary-news&apiKey=9e1ac8704e124f32ab6b70e9de3a56c8";
+        else if(pos == 2)
+            urltemp = "http://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=9e1ac8704e124f32ab6b70e9de3a56c8";
+        else if(pos == 3)
+            urltemp = "http://newsapi.org/v2/top-headlines?sources=bbc-sport&apiKey=9e1ac8704e124f32ab6b70e9de3a56c8";
+        else if(pos == 4)
+            urltemp = "http://newsapi.org/v2/top-headlines?sources=usa-today&apiKey=9e1ac8704e124f32ab6b70e9de3a56c8";
+        else if(pos == 5)
+            urltemp = "http://newsapi.org/v2/top-headlines?sources=cnn&apiKey=9e1ac8704e124f32ab6b70e9de3a56c8";
+        else if(pos == 6)
+            urltemp = "http://newsapi.org/v2/top-headlines?sources=fox-news&apiKey=9e1ac8704e124f32ab6b70e9de3a56c8";
+        else if(pos == 7)
+            urltemp = "http://newsapi.org/v2/top-headlines?sources=google-news&apiKey=9e1ac8704e124f32ab6b70e9de3a56c8";
+        else if(pos == 8)
+            urltemp = "http://newsapi.org/v2/top-headlines?sources=the-verge&apiKey=9e1ac8704e124f32ab6b70e9de3a56c8";
+        else if(pos == 9)
+            urltemp = "http://newsapi.org/v2/top-headlines?sources=news24&apiKey=9e1ac8704e124f32ab6b70e9de3a56c8";
+        else
+        {
+            urltemp = "http://newsapi.org/v2/top-headlines?sources=abc-news&apiKey=9e1ac8704e124f32ab6b70e9de3a56c8";
+        }
 
-        Ion.with(this).load("GET",url).asJsonObject().setCallback(new FutureCallback<JsonObject>() {
-            @Override
-            public void onCompleted(Exception e, JsonObject result) {
+            Ion.with(this).load("GET", urltemp).asJsonObject().setCallback(new FutureCallback <JsonObject>() {
+                @Override
+                public void onCompleted(Exception e, JsonObject result) {
 
-                String status = result.get("status").getAsString();
+                    String status = result.get("status").getAsString();
 
-                if(status.equals("ok")){
+                    if (status.equals("ok")) {
 
                         JsonArray array = result.get("articles").getAsJsonArray();
-                        JsonObject object = array.get(pos).getAsJsonObject();
 
-                        String author = object.get("author").toString();
+                        for (int i = 0; i < array.size(); i++) {
+                            JsonObject object = array.get(i).getAsJsonObject();
 
-                        String title = object.get("title").toString();
-                        title = title.substring(1,title.length()-1);
+                            String author = object.get("author").toString();
 
-                        String description = object.get("description").toString();
+                            String title = object.get("title").toString();
+                            title = title.substring(1, title.length() - 1);
 
-                        String url = object.get("url").toString();
-                        url = url.substring(1,url.length()-1);
+                            String url = object.get("url").toString();
+                            url = url.substring(1, url.length() - 1);
 
-                        String urlToImage = object.get("urlToImage").toString();
-                        urlToImage = urlToImage.substring(1,urlToImage.length()-1);
+                            String urlToImage = object.get("urlToImage").toString();
+                            urlToImage = urlToImage.substring(1, urlToImage.length() - 1);
 
-                        String date = object.get("publishedAt").toString();
-                        String content = object.get("content").toString();
-                        content = content.substring(1,content.length()-1);
+                            String date = object.get("publishedAt").toString();
+                            String content = object.get("content").toString();
+                            content = content.substring(1, content.length() - 1);
 
-                        JsonObject name1 = object.get("source").getAsJsonObject();
-                        String name = name1.get("name").toString();
-
-
-                        if(name!=null)
-                            editTitle.setText(title);
-                        if(urlToImage!=null)
-                            Picasso.get().load(urlToImage).into(editUrlImage);
-                        if(author!=null)
-                            editauthor.setText("Author  "+author);
-                        if(date!=null)
-                            editdate.setText("published at: "+date);
-                        if(description!=null)
-                            editdescription.setText(description);
-                        if(content!=null)
-                            editcontent.setText(content);
+                            items.add(new ModelItems(title, author, date, urlToImage, url));
 
 
-                    final String finalUrl = url;
-                    editDetails.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
+                        }
 
-                                Intent intent = new Intent(getActivity(),DetailsActivity.class);
-                                intent.putExtra("url",finalUrl);
-                                startActivity(intent);
-                            }
-                        });
+                        adapter = new ItemAdapter(getActivity(), items);
+                        recyclerView.setAdapter(adapter);
 
-                        Log.e("Prashant","success");
+                        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+                        recyclerView.setLayoutManager(layoutManager);
+
+
+                        Log.e("Prashant", "success");
+                    } else {
+                        Log.e("Prashant", "error");
+                    }
                 }
-                else{
-                    Log.e("Prashant","error");
-                }
-            }
-        });
+            });
 
     }
+
+
 
 
 }

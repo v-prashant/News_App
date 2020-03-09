@@ -21,12 +21,10 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout TabLayout;
     private ViewPager viewPager;
     private MyPageAdapter adapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         viewPager = findViewById(R.id.viewPager);
         TabLayout = findViewById(R.id.tablayout);
@@ -48,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
         bar.setTitle("News list");
         bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("blue")));
 
-
     }
+
 
 
 }
